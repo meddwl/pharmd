@@ -57,6 +57,7 @@ def entry_point():
             d = pd.read_csv(os.path.join(args.input, f), sep='\t', header=None, names=['mol_id', 'conf_id'])
             df = df.append(d, ignore_index=True)
             df.drop_duplicates(inplace=True)
+        df['mol_id'] = df['mol_id'].astype(str)
         df = df.groupby('mol_id').agg('count').reset_index()
         df = df.merge(conf_count, how='left', on='mol_id')
         df['cca_score'] = round(df['conf_id'] / df['total_conf_count'], 3)
@@ -72,6 +73,7 @@ def entry_point():
             d.drop_duplicates(inplace=True)
             # d['hit_list'] = i
             df = df.append(d, ignore_index=True)
+        df['mol_id'] = df['mol_id'].astype(str)
         df = df.reset_index().groupby('mol_id').agg('count').reset_index()
         df['cha_score'] = round(df['index'] / len(files), 3)
         df.to_csv(args.output, sep='\t', columns=['mol_id', 'cha_score'], index=False)
